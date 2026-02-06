@@ -134,6 +134,13 @@ app.get("/", async (c) => {
         }
         startTime = new Date(fromQuery);
         endTime = new Date(toQuery);
+        
+        // Set startTime to beginning of the day (00:00:00.000)
+        startTime.setUTCHours(0, 0, 0, 0);
+        
+        // Set endTime to end of the day (23:59:59.999)
+        endTime.setUTCHours(23, 59, 59, 999);
+        
         if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
           return c.json(
             { errorMessage: 'Invalid "from" or "to" date format' },
@@ -242,6 +249,13 @@ app.get("/summary/:id", async (c) => {
         }
         startTime = new Date(fromQuery);
         endTime = new Date(toQuery);
+        
+        // Set startTime to beginning of the day (00:00:00.000)
+        startTime.setUTCHours(0, 0, 0, 0);
+        
+        // Set endTime to end of the day (23:59:59.999)
+        endTime.setUTCHours(23, 59, 59, 999);
+        
         if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
           return c.json(
             { errorMessage: 'Invalid "from" or "to" date format' },

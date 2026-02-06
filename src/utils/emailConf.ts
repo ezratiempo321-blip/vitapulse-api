@@ -1,5 +1,14 @@
 import { google } from 'googleapis';
+import * as nodemailer from 'nodemailer';
 import "dotenv/config";
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 // Initialize the OAuth2 client
 const oAuth2Client = new google.auth.OAuth2(
@@ -14,35 +23,54 @@ const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 /**
  * Core function to send the email via Gmail API
  */
+// const sendGmail = async (to: string, subject: string, htmlContent: string) => {
+//   try {
+//     // Gmail API requires a specific RFC 2822 formatted string encoded in base  64url
+//     const subjectEncoded = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
+//     const messageParts = [
+//       `To: ${to}`,
+//       'Content-Type: text/html; charset=utf-8',
+//       'MIME-Version: 1.0',
+//       `Subject: ${subjectEncoded}`,
+//       '',
+//       htmlContent,
+//     ];
+//     const message = messageParts.join('\n');
+    
+//     const encodedMessage = Buffer.from(message)
+//       .toString('base64')
+//       .replace(/\+/g, '-')
+//       .replace(/\//g, '_')
+//       .replace(/=+$/, '');
+
+//     const res = await gmail.users.messages.send({
+//       userId: 'me',
+//       requestBody: { raw: encodedMessage },
+//     });
+
+//     console.log(htmlContent);
+
+//     console.log("Email sent successfully. ID:", res.data.id);
+//     return true;
+//   } catch (error) {
+//     console.error("Gmail API Send Error:", error);
+//     return false;
+//   }
+// };
 const sendGmail = async (to: string, subject: string, htmlContent: string) => {
   try {
-    // Gmail API requires a specific RFC 2822 formatted string encoded in base64url
-    const subjectEncoded = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
-    const messageParts = [
-      `To: ${to}`,
-      'Content-Type: text/html; charset=utf-8',
-      'MIME-Version: 1.0',
-      `Subject: ${subjectEncoded}`,
-      '',
-      htmlContent,
-    ];
-    const message = messageParts.join('\n');
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html: htmlContent,
+    };
 
-    const encodedMessage = Buffer.from(message)
-      .toString('base64')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-
-    const res = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: { raw: encodedMessage },
-    });
-
-    console.log("Email sent successfully. ID:", res.data.id);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully. ID:', info.messageId);
     return true;
   } catch (error) {
-    console.error("Gmail API Send Error:", error);
+    console.error('Nodemailer Send Error:', error);
     return false;
   }
 };
