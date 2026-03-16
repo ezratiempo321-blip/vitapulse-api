@@ -1,5 +1,5 @@
 {
-  "id": "97bcb11b-5940-477f-a390-1b4f9bcf31bc",
+  "id": "4f5531eb-200c-4104-b872-4e4e591e2725",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -148,6 +148,71 @@
         "bp_records_table_user_id_users_table_id_fk": {
           "name": "bp_records_table_user_id_users_table_id_fk",
           "tableFrom": "bp_records_table",
+          "tableTo": "users_table",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.devices": {
+      "name": "devices",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "device_id": {
+          "name": "device_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "device_name": {
+          "name": "device_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registered_at": {
+          "name": "registered_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "devices_user_id_users_table_id_fk": {
+          "name": "devices_user_id_users_table_id_fk",
+          "tableFrom": "devices",
           "tableTo": "users_table",
           "columnsFrom": [
             "user_id"
@@ -369,12 +434,6 @@
             "cycle": false
           }
         },
-        "deviceId": {
-          "name": "deviceId",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -437,20 +496,13 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
-          "default": "'2025-06-24 08:27:39.555'"
+          "default": "'2026-03-01 14:32:19.166'"
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_table_deviceId_unique": {
-          "name": "users_table_deviceId_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "deviceId"
-          ]
-        },
         "users_table_email_unique": {
           "name": "users_table_email_unique",
           "nullsNotDistinct": false,

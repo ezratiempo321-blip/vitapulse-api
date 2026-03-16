@@ -1,7 +1,6 @@
 
-import { boolean, integer, pgTable, timestamp, varchar, text, unique } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, timestamp, varchar, text, unique, serial } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm';
-
 
 export const users = pgTable('users_table', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),  
@@ -53,8 +52,6 @@ export const bpPulseRecords = pgTable('bp_records_table', {
 
 export type records = typeof bpPulseRecords.$inferSelect;
 
-
-
 // Alert History table to store past alerts
 export const alertHistory = pgTable('alert_history', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),  
@@ -82,3 +79,12 @@ export const loginStat = pgTable('login_stat', {
 }, (t) => [
     unique('unique_date').on(t.date) // New syntax: array, not object
 ]);
+
+export const devices = pgTable("devices", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  deviceId: varchar("device_id", { length: 255 }).notNull(),
+  deviceName: varchar("device_name", { length: 255 }),
+  registeredAt: timestamp("registered_at").defaultNow(),
+  status: integer("status").default(1).notNull(),
+});

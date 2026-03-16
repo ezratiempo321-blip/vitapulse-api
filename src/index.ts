@@ -27,6 +27,8 @@ import { userManagementRoute } from "./routes/auth/admin/userManagement";
 import { ActivityLogsRoutes } from "./routes/auth/admin/ActivityLogs";
 import { SSERoute } from "./routes/auth/SSE";
 import { passwordResetRoute } from "./routes/passwordReset";
+import { deviceRoutes } from "./routes/auth/devices";
+import { bpDataPublicRoute } from "./routes/bpData";
 import { googelSheetGetHelper } from "./utils/getDataFromGoogleSheet";
 
 const app = new Hono().basePath("/api");
@@ -57,6 +59,10 @@ app.get("/env", (c) => {
   });
 });
 
+app.get("/test", (c) => {
+  return c.json({ message: "Test route working!" });
+});
+
 // routes setup
 app.route("/register", registerRoute);
 app.route("/email-verification", emailSendRoute);
@@ -68,8 +74,10 @@ app.route("/auth/logout", logoutRoute);
 
 //public route
 app.route("/bp-google-sheet", getRoute);
+app.route("/bp-data", bpDataPublicRoute);
 
 //protected routes
+app.route("/auth/device", deviceRoutes);
 app.route("/auth/user", user);
 app.route("/auth/bp", bgRoute);
 app.route("/auth/ws/bp", websocketRoute);
@@ -87,6 +95,7 @@ console.log(`Allowed Origin: ${Bun.env.APP_DOMAIN_NAME!}`);
 
 export default {
   port: Bun.env.PORT || 8000,
+  hostname: Bun.env.HOST,
   fetch: app.fetch,
   websocket,
 };

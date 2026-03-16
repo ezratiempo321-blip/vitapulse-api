@@ -10,7 +10,7 @@ const app = new Hono();
 app.post("/", async (c) => {
   //get id from authenticated user
   const { id, age, email } = await c.get("jwtPayload");
-  console.log(email);
+
   //destucting data from json
   const { systolic, diastolic, pulse, timestamp } = await c.req.json();
   const getStatus = getBpAndPulseByAge(systolic, diastolic, pulse, age);
@@ -348,5 +348,35 @@ app.post("/delete", async (c) => {
     return c.json({ message: "unexpected error occured", error });
   }
 });
+
+app.get("/latest", async (c) => {
+  const { id } = await c.get("jwtPayload");
+
+  try {
+    const result = await db
+      .select({
+        id: bpPulseRecords.id,
+        systolic: bpPulseRecords.systolic,
+        diastolic: bpPulseRecords.diastolic,
+        clinicalBpLabel: bpPulseRecords.clinicalBpLabel,
+        bpStatus: bpPulseRecords.bpStatus,
+        pulse: bpPulseRecords.pulse,
+        pulseStatus: bpPulseRecords.pulseStatus,
+        timestamp: bpPulseRecords.timestamp,
+      })
+      .from(bpPulseRecords)
+      .where(eq(bpPulseRecords.user_id, id))
+      .orderBy(desc(bpPulseRecords.timestamp))
+      .limit(1);
+
+    if (!result[0]) return c.json({ message: "No records found" }, 404);
+
+    return c.json(result[0], 200);
+  } catch (error) {
+    console.error(error);
+    return c.json({ message: "unexpected error" }, 500);
+  }
+});
+
 
 export { app as bgRoute };

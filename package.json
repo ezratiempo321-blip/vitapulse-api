@@ -4,7 +4,10 @@
     "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --compile --outfile hono-app",
     "postinstall": "bun run build",
-    "start": "./hono-app"
+    "start": "./hono-app",
+    "migrate:reset": "bun run scripts/reset-db.ts",
+    "db:seed": "bun run scripts/seed.ts",
+    "migrate": "npx drizzle-kit push && bun run db:seed"
   },
   "dependencies": {
     "@libsql/client": "^0.15.2",
